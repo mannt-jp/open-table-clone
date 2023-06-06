@@ -4,19 +4,23 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { authActions } from "@/app/store/AuthSlice";
+import { getCookie } from "cookies-next";
 
 export default function useAuth() {
   const { loading, data, error } = useSelector(
     (state: RootState) => state.auth
   );
   const dispatch = useDispatch();
-  const signIn = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }, handleClose: () => void) => {
+  const signIn = async (
+    {
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    },
+    handleClose: () => void
+  ) => {
     try {
       dispatch(authActions.setLoading(true));
       const response = await axios.post(
@@ -34,21 +38,24 @@ export default function useAuth() {
       dispatch(authActions.setError(e.response.data.errorMessage));
     }
   };
-  const signUp = async ({
-    email,
-    password,
-    phone,
-    firstName,
-    lastName,
-    city,
-  }: {
-    email: string;
-    password: string;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    city: string;
-  }) => {
+  const signUp = async (
+    {
+      email,
+      password,
+      phone,
+      firstName,
+      lastName,
+      city,
+    }: {
+      email: string;
+      password: string;
+      phone: string;
+      firstName: string;
+      lastName: string;
+      city: string;
+    },
+    handleClose: () => void
+  ) => {
     try {
       const response = await axios.post(
         "http://localhost:3000/api/auth/signup",
@@ -61,11 +68,14 @@ export default function useAuth() {
           city,
         }
       );
-      const responseData = await response.data;
-      return responseData;
-    } catch (error) {
-      throw new Error("There was an error :(");
+      dispatch(authActions.setLoading(false));
+      dispatch(authActions.setData(response.data));
+      handleClose();
+    } catch (e: any) {
+      dispatch(authActions.setLoading(false));
+      dispatch(authActions.setError(e.response.data.errorMessage));
     }
   };
-  return { signIn, signUp };
+
+  return { signIn, signUp};
 }

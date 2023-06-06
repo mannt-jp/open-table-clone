@@ -23,6 +23,7 @@ export default function AuthModal({ isSignIn }: { isSignIn: Boolean }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const data = useSelector((state: RootState) => state.auth.data);
   const loading = useSelector((state: RootState) => state.auth.loading);
   const error = useSelector((state: RootState) => state.auth.error);
   return (
@@ -68,7 +69,10 @@ export default function AuthModal({ isSignIn }: { isSignIn: Boolean }) {
                     ? "Log into your account"
                     : "Create your OpenTable account"}
                 </h2>
-                <AuthModalInputs isSignIn={isSignIn} handleClose={handleClose}></AuthModalInputs>
+                <AuthModalInputs
+                  isSignIn={isSignIn}
+                  handleClose={handleClose}
+                ></AuthModalInputs>
               </div>
             </div>
           )}
