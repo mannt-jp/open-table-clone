@@ -3,20 +3,18 @@
 import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import validator from "validator";
+import { useDispatch } from "react-redux";
 
-export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
+export default function AuthModalInputs({ isSignIn, handleClose }: { isSignIn: Boolean, handleClose: () => void }) {
   const { signIn, signUp } = useAuth();
-  const handleClick = () => {
-    setInputValsWasTouched({
-      firstName: true,
-      lastName: true,
-      email: true,
-      phone: true,
-      city: true,
-      password: true,
-    });
+  const [buttonWasClicked, setButtonWasClicked] = useState(false)
+  const handleClick = async () => {
+    setButtonWasClicked(true);
     if (isSignIn) {
-      signIn({ email: inputVals.email, password: inputVals.password });
+      const response = await signIn({
+        email: inputVals.email,
+        password: inputVals.password,
+      }, handleClose);
     } else {
       signUp({
         email: inputVals.email,
@@ -38,26 +36,13 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
     password: "",
   });
 
-  const [inputValsWasTouched, setInputValsWasTouched] = useState({
-    firstName: false,
-    lastName: false,
-    email: false,
-    phone: false,
-    city: false,
-    password: false,
-  });
-
   const inputFieldIsInvalid = {
-    firstName:
-      inputVals.firstName.trim().length == 0 && inputValsWasTouched.firstName,
-    lastName:
-      inputVals.lastName.trim().length == 0 && inputValsWasTouched.lastName,
-    email: !validator.isEmail(inputVals.email) && inputValsWasTouched.email,
-    phone: inputVals.phone.trim().length == 0 && inputValsWasTouched.phone,
-    city: inputVals.city.trim().length == 0 && inputValsWasTouched.city,
-    password:
-      !validator.isStrongPassword(inputVals.password) &&
-      inputValsWasTouched.password,
+    firstName: inputVals.firstName.trim().length == 0,
+    lastName: inputVals.lastName.trim().length == 0,
+    email: !validator.isEmail(inputVals.email),
+    phone: inputVals.phone.trim().length == 0,
+    city: inputVals.city.trim().length == 0,
+    password: !validator.isStrongPassword(inputVals.password),
   };
 
   let inputFormIsValid = false;
@@ -73,14 +58,13 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
       !inputFieldIsInvalid.email &&
       !inputFieldIsInvalid.password;
   }
+
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputVals((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
-    setInputValsWasTouched((prev) => {
-      return { ...prev, [e.target.name]: true };
-    });
   };
+
   return (
     <div>
       {!isSignIn && (
@@ -88,9 +72,7 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
           <input
             type="text"
             name="firstName"
-            className={`border rounded p-2 p-3 w-[49%] ${
-              inputFieldIsInvalid.firstName && "border-red-500"
-            }`}
+            className={`border rounded p-2 p-3 w-[49%] `}
             placeholder="First Name"
             onChange={inputChangeHandler}
             value={inputVals.firstName}
@@ -98,9 +80,7 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
           <input
             type="text"
             name="lastName"
-            className={`border rounded p-2 p-3 w-[49%] ${
-              inputFieldIsInvalid.lastName && "border-red-500"
-            }`}
+            className={`border rounded p-2 p-3 w-[49%] `}
             placeholder="Last Name"
             onChange={inputChangeHandler}
             value={inputVals.lastName}
@@ -111,9 +91,7 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
         <input
           type="text"
           name="email"
-          className={`border rounded p-2 p-3 w-full ${
-            inputFieldIsInvalid.email && "border-red-500"
-          }`}
+          className={`border rounded p-2 p-3 w-full `}
           placeholder="Email"
           onChange={inputChangeHandler}
           value={inputVals.email}
@@ -124,9 +102,8 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
           <input
             type="text"
             name="phone"
-            className={`border rounded p-2 p-3 w-[49%] ${
-              inputFieldIsInvalid.phone && "border-red-500"
-            }`}
+            className={`border rounded p-2 p-3 w-[49%] 
+              `}
             placeholder="Phone"
             onChange={inputChangeHandler}
             value={inputVals.phone}
@@ -134,9 +111,7 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
           <input
             type="text"
             name="city"
-            className={`border rounded p-2 p-3 w-[49%] ${
-              inputFieldIsInvalid.city && "border-red-500"
-            }`}
+            className={`border rounded p-2 p-3 w-[49%]`}
             placeholder="City"
             onChange={inputChangeHandler}
             value={inputVals.city}
@@ -147,9 +122,7 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
         <input
           type="password"
           name="password"
-          className={`border rounded p-2 p-3 w-full ${
-            inputFieldIsInvalid.password && "border-red-500"
-          }`}
+          className={`border rounded p-2 p-3 w-full `}
           placeholder="Password"
           onChange={inputChangeHandler}
           value={inputVals.password}
@@ -158,7 +131,7 @@ export default function AuthModalInputs({ isSignIn }: { isSignIn: Boolean }) {
       <button
         className="uppercase bg-red-600 w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400"
         onClick={handleClick}
-        disabled={!inputFormIsValid}
+        disabled={!inputFormIsValid && buttonWasClicked}
       >
         {isSignIn ? "Log in" : "Create account"}
       </button>

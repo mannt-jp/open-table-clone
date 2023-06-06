@@ -1,16 +1,24 @@
 "use client";
 
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import { authActions } from "@/app/store/AuthSlice";
 
 export default function useAuth() {
+  const { loading, data, error } = useSelector(
+    (state: RootState) => state.auth
+  );
+  const dispatch = useDispatch();
   const signIn = async ({
     email,
     password,
   }: {
     email: string;
     password: string;
-  }) => {
+  }, handleClose: () => void) => {
     try {
+      dispatch(authActions.setLoading(true));
       const response = await axios.post(
         "http://localhost:3000/api/auth/signin",
         {
@@ -18,9 +26,12 @@ export default function useAuth() {
           password,
         }
       );
-      console.log(response);
-    } catch (error) {
-      console.log(error);
+      dispatch(authActions.setLoading(false));
+      dispatch(authActions.setData(response.data));
+      handleClose();
+    } catch (e: any) {
+      dispatch(authActions.setLoading(false));
+      dispatch(authActions.setError(e.response.data.errorMessage));
     }
   };
   const signUp = async ({
@@ -50,9 +61,10 @@ export default function useAuth() {
           city,
         }
       );
-      console.log(response);
+      const responseData = await response.data;
+      return responseData;
     } catch (error) {
-      console.log(error);
+      throw new Error("There was an error :(");
     }
   };
   return { signIn, signUp };

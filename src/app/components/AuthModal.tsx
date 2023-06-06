@@ -7,8 +7,7 @@ import Modal from "@mui/material/Modal";
 import AuthModalInputs from "./AuthModalInput";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { useDispatch } from "react-redux";
-import { authActions } from "../store/AuthSlice";
+import { Alert, CircularProgress } from "@mui/material";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -25,8 +24,7 @@ export default function AuthModal({ isSignIn }: { isSignIn: Boolean }) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const loading = useSelector((state: RootState) => state.auth.loading);
-  const dispatch = useDispatch();
-  dispatch(authActions.setLoading(true));
+  const error = useSelector((state: RootState) => state.auth.error);
   return (
     <div>
       <Button
@@ -47,9 +45,18 @@ export default function AuthModal({ isSignIn }: { isSignIn: Boolean }) {
       >
         <Box sx={style}>
           {loading ? (
-            <div>Loading...</div>
+            <div className="text-center">
+              <CircularProgress />
+            </div>
           ) : (
             <div className="p-2">
+              {error ? (
+                <Alert severity="error" className="mb-4">
+                  {error}
+                </Alert>
+              ) : (
+                ""
+              )}
               <div className="uppercase font-bold text-center pb-2 border-b mb-2">
                 <p className="text-sm">
                   {isSignIn ? "Sign In" : "Create Account"}
@@ -61,7 +68,7 @@ export default function AuthModal({ isSignIn }: { isSignIn: Boolean }) {
                     ? "Log into your account"
                     : "Create your OpenTable account"}
                 </h2>
-                <AuthModalInputs isSignIn={isSignIn}></AuthModalInputs>
+                <AuthModalInputs isSignIn={isSignIn} handleClose={handleClose}></AuthModalInputs>
               </div>
             </div>
           )}
