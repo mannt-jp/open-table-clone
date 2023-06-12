@@ -4,12 +4,9 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { authActions } from "@/app/store/AuthSlice";
-import { getCookie } from "cookies-next";
+import { getCookie, removeCookies } from "cookies-next";
 
 export default function useAuth() {
-  const { loading, data, error } = useSelector(
-    (state: RootState) => state.auth
-  );
   const dispatch = useDispatch();
   const signIn = async (
     {
@@ -76,6 +73,9 @@ export default function useAuth() {
       dispatch(authActions.setError(e.response.data.errorMessage));
     }
   };
-
-  return { signIn, signUp};
+  const logOut = () => {
+    removeCookies("jwt");
+    dispatch(authActions.setData(null));
+  }
+  return { signIn, signUp, logOut};
 }

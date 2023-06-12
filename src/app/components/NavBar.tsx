@@ -1,14 +1,20 @@
-"use client"
+"use client";
 
 import Link from "next/link";
-import LoginModal from "./AuthModal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../store/AuthSlice";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import { useEffect } from "react";
+import { RootState } from "../store";
+import { Button } from "@mui/material";
+import AuthModal from "./AuthModal";
+import useAuth from "../../../hooks/useAuth";
+
 export default function NavBar() {
+  const { loading, data } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
+  const { logOut } = useAuth();
   const fetchUser = async () => {
     dispatch(authActions.setLoading(true));
     try {
@@ -39,10 +45,23 @@ export default function NavBar() {
         OpenTable
       </Link>
       <div>
-        <div className="flex">
-          <LoginModal isSignIn={true}></LoginModal>
-          <LoginModal isSignIn={false}></LoginModal>
-        </div>
+        {loading ? null : (
+          <div className="flex">
+            {data ? (
+              <button
+                className="bg-blue-500 text-white border p-1 px-4 rounded mr-3"
+                onClick={logOut}
+              >
+                Log out
+              </button>
+            ) : (
+              <>
+                <AuthModal isSignIn={true}></AuthModal>
+                <AuthModal isSignIn={false}></AuthModal>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </nav>
   );

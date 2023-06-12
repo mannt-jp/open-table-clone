@@ -28,16 +28,16 @@ export default function AuthModal({ isSignIn }: { isSignIn: Boolean }) {
   const error = useSelector((state: RootState) => state.auth.error);
   return (
     <div>
-      <Button
+      <button
         className={
-          isSignIn
-            ? "bg-blue-400 text-white "
-            : "" + "border p-1 px-4 rounded mr-3"
+          (isSignIn
+            ? "bg-blue-500 text-white "
+            : "") + "border p-1 px-4 rounded mr-3"
         }
         onClick={handleOpen}
       >
         {isSignIn ? "Sign in" : "Sign up"}
-      </Button>
+      </button>
       <Modal
         open={open}
         onClose={handleClose}

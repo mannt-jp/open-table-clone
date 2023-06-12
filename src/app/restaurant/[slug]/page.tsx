@@ -23,7 +23,10 @@ export default async function RestaurantDetail({
         <Images images={restaurant.images}></Images>
         {restaurant.reviews && <Reviews reviews={restaurant.reviews}></Reviews>}
       </div>
-      <MakeReservation></MakeReservation>
+      <MakeReservation
+        openTime={restaurant.open_time}
+        closeTime={restaurant.close_time}
+      ></MakeReservation>
     </>
   );
 }

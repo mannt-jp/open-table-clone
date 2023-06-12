@@ -1,11 +1,7 @@
 import NavBar from "./components/NavBar";
 import "./globals.css";
 import Providers from "./components/providers";
-import { useDispatch } from "react-redux";
-import { authActions } from "./store/AuthSlice";
-import { getCookie } from "cookies-next";
-import axios from "axios";
-import { useEffect } from "react";
+import "react-datepicker/dist/react-datepicker.css"
 
 export const metadata = {
   title: "OpenTable",

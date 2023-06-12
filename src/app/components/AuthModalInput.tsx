@@ -23,7 +23,7 @@ export default function AuthModalInputs({ isSignIn, handleClose }: { isSignIn: B
         lastName: inputVals.lastName,
         phone: inputVals.phone,
         city: inputVals.city,
-      });
+      }, handleClose);
     }
   };
 

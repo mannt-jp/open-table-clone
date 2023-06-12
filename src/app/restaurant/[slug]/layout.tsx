@@ -1,3 +1,4 @@
+import { StringLiteral } from "typescript";
 import Header from "./components/Header";
 
 import { Cuisine, Location, PrismaClient, Review } from "@prisma/client";
@@ -13,6 +14,8 @@ interface Restaurant {
   cuisine: Cuisine;
   slug: string;
   reviews: Review[];
+  open_time: string;
+  close_time: string;
 }
 
 export const fetchRestaurantBySlug = async (
@@ -28,6 +31,8 @@ export const fetchRestaurantBySlug = async (
       location: true,
       slug: true,
       reviews: true,
+      open_time: true,
+      close_time: true,
     },
     where: {
       slug,
