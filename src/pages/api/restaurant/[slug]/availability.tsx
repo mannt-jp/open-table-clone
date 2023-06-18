@@ -13,20 +13,20 @@ export default async function handler(
     time: string;
     partySize: string;
   };
+
   if (!day || !time || !partySize) {
     return res.status(400).json({ errorMessage: "Invalid query" });
   }
 
   const restaurant = await prisma.restaurant.findUnique({
-    select: { id: true, tables: true },
+    select: { id: true, tables: true, open_time: true, close_time: true },
     where: { slug },
   });
 
-  if (!restaurant) {
+  if (!restaurant)
     return res.status(400).json({ errorMessage: "Invalid query" });
-  }
 
-  const searchTimes = times.find((t) => {
+  let searchTimes = times.find((t) => {
     return t.time === time;
   })?.searchTimes;
 
@@ -34,7 +34,20 @@ export default async function handler(
     return res.status(400).json({ errorMessage: "Invalid query" });
   }
 
-  // Bookings of the restaurant in time window.
+  searchTimes = searchTimes.filter(
+    (searchTime) =>
+      new Date(`${day}T${searchTime}`) <
+        new Date(`${day}T${restaurant.close_time}`) &&
+      new Date(`${day}T${searchTime}`) >=
+        new Date(`${day}T${restaurant.open_time}`)
+  );
+
+  let notAvailableTime: string[] = [];
+
+  const seatOfTables = restaurant.tables.map((table) => {
+    return { id: table.id, seats: table.seats };
+  });
+
   const bookings = await prisma.booking.findMany({
     select: { booking_time: true, number_of_people: true, tables: true },
     where: {
@@ -46,13 +59,27 @@ export default async function handler(
     },
   });
 
-  const table_ids = restaurant.tables.map(table => table.id)
+  const table_ids = restaurant.tables.map((table) => table.id);
 
-  bookings.forEach(booking => {
-    const booking_table_ids = booking.tables.map(table => table.table_id)
-    const available_table_ids = table_ids.filter(table => !booking_table_ids.includes(table));
-    
-  })
+  bookings.forEach((booking) => {
+    const booking_table_ids = booking.tables.map((table) => table.table_id);
+    const available_table_ids = table_ids.filter(
+      (table) => !booking_table_ids.includes(table)
+    );
+    let totalSeats = 0;
+    available_table_ids.forEach((id) => {
+      const seatsInfo = seatOfTables.find((table) => table.id === id);
+      totalSeats =
+        totalSeats + (seatsInfo && seatsInfo.seats ? seatsInfo.seats : 0);
+    });
+    if (totalSeats < parseInt(partySize)) {
+      notAvailableTime.push(booking.booking_time.toISOString().split("T")[1]);
+    }
+  });
 
-  return res.status(200).json({ searchTimes });
+  let availability: any = [];
+  searchTimes.forEach((time) => {
+    availability.push({ time: times.findLast(t => t.time === time)?.displayTime, availability: !notAvailableTime.includes(time) });
+  });
+  return res.status(200).json(availability);
 }

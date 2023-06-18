@@ -26,6 +26,7 @@ export default async function RestaurantDetail({
       <MakeReservation
         openTime={restaurant.open_time}
         closeTime={restaurant.close_time}
+        slug={restaurant.slug}
       ></MakeReservation>
     </>
   );
