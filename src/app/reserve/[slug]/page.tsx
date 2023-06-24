@@ -1,12 +1,27 @@
 import Header from "./components/Header";
 import Form from "./components/Form";
-export default function Reservation() {
+import { PrismaClient } from "@prisma/client";
+import { fetchRestaurantBySlug } from "@/app/restaurant/[slug]/layout";
+
+const prisma = new PrismaClient();
+export default async function Reservation({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { date: string; partySize: string };
+}) {
+  const { slug } = params;
+  const { date, partySize } = searchParams;
+  const restaurant = await fetchRestaurantBySlug(slug)
   return (
     <div className="border-t h-screen">
       <div className="py-9 w-3/5 m-auto">
-        <Header></Header>
+        <Header name={restaurant.name} date={date} partySize={partySize}></Header>
         <Form></Form>
       </div>
     </div>
   );
 }
+
+

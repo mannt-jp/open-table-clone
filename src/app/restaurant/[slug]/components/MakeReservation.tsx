@@ -66,7 +66,6 @@ export default function MakeReservation({
         <div className="flex flex-col justify-between">
           <div className="flex flex-col w-full">
             <label htmlFor="">Date</label>
-            {/* <input type="text" className="py-3 border-b font-light w-28" /> */}
             <DatePicker
               selected={selectedDate}
               onChange={(date) => setSelectedDate(date ? date : new Date())}
@@ -110,7 +109,7 @@ export default function MakeReservation({
                 {data.map((item) =>
                   item.availability ? (
                     <Link
-                      href={`/reserve/${slug}?date=${selectedDate}T${item.time}&partySize=${selectedPartySize}`}
+                      href={`/reserve/${slug}?date=${selectedDate.toDateString()}T${item.time}&partySize=${selectedPartySize}`}
                       className="bg-red-600 cursor-pointer p-2 w-24 text-center text-white mb-3 rounded mr-3"
                     >
                       <p className="text-sm font-bold">{item.time}</p>

@@ -1,12 +1,24 @@
 "use client";
 
+import { useState } from "react";
+
 export default function Form() {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [email, setEmail] = useState('')
+  const [occasion, setOccasion] = useState('')
+  const [requests, setRequests] = useState('')
+
   return (
     <div className="mt-10 flex flex-wrap justify-between w-[660px]">
       <input
         type="text"
         className="border rounded p-3 w-80 mb-4"
         placeholder="First name"
+        name="firstName"
+        value={firstName}
+        
       />
       <input
         type="text"
