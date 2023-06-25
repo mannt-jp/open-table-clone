@@ -78,7 +78,7 @@ export default async function handler(
     let availability: any = [];
     searchTimes.forEach((time) => {
       availability.push({
-        time: times.findLast((t) => t.time === time)?.displayTime,
+        time,
         availability: !notAvailableTime.includes(time),
       });
     });

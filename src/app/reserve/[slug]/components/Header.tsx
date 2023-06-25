@@ -1,3 +1,5 @@
+import { times } from "@/data";
+
 export default function Header({
   name,
   date,
@@ -21,7 +23,9 @@ export default function Header({
           <h1 className="text-3xl font-bold">{name}</h1>
           <div className="flex mt-3">
             <p className="mr-6">{day}</p>
-            <p className="mr-6">{time}</p>
+            <p className="mr-6">
+              {times.findLast((t) => t.time === time)?.displayTime}
+            </p>
             <p className="mr-6">
               {partySize} {parseInt(partySize) === 1 ? "person" : "people"}
             </p>

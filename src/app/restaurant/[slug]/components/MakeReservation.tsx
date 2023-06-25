@@ -109,10 +109,10 @@ export default function MakeReservation({
                 {data.map((item) =>
                   item.availability ? (
                     <Link
-                      href={`/reserve/${slug}?date=${selectedDate.toDateString()}T${item.time}&partySize=${selectedPartySize}`}
+                      href={`/reserve/${slug}?date=${selectedDate.toISOString().split('T')[0]}T${item.time}&partySize=${selectedPartySize}`}
                       className="bg-red-600 cursor-pointer p-2 w-24 text-center text-white mb-3 rounded mr-3"
                     >
-                      <p className="text-sm font-bold">{item.time}</p>
+                      <p className="text-sm font-bold">{times.findLast(t => t.time === item.time)?.displayTime}</p>
                     </Link>
                   ) : (
                     <p className="bg-gray-300 p-2 w-24 mb-3 rounded mr-3"></p>

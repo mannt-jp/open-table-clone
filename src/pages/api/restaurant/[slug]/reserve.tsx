@@ -13,7 +13,7 @@ export default async function handler(
       time: string;
       partySize: string;
     };
-
+    console.log(req.query);
     const {
       bookerEmail,
       bookerPhone,
@@ -23,6 +23,7 @@ export default async function handler(
       bookerRequest,
     } = req.body;
 
+    console.log(req.body);
     if (!day || !time || !partySize) {
       return res.status(400).json({ errorMessage: "Invalid query" });
     }
@@ -149,6 +150,7 @@ export default async function handler(
           booker_occasion: bookerOccasion,
         },
       });
+      console.log(chosenTableIds);
       if (chosenTableIds) {
         const bookingsOnTablesData = chosenTableIds.map((table_id) => {
           return {

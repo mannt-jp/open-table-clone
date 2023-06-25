@@ -6,6 +6,7 @@ import { useState } from "react";
 export default function useReservation() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [alreadyBooked, setAlreadyBooked] = useState(false);
   const fetchReversation = async ({
     slug,
     day,
@@ -33,7 +34,14 @@ export default function useReservation() {
     try {
       const response = await axios.post(
         `http://localhost:3000/api/restaurant/${slug}/reserve`,
-        {},
+        {
+          bookerFirstName,
+          bookerLastName,
+          bookerEmail,
+          bookerOccasion,
+          bookerRequest,
+          bookerPhone,
+        },
         {
           params: {
             day,
@@ -43,12 +51,13 @@ export default function useReservation() {
         }
       );
       setLoading(false);
-      return response.data
+      setAlreadyBooked(true);
+      return response.data;
     } catch (error: any) {
       setLoading(false);
       setError(error.response.data.errorMessage);
     }
   };
 
-  return { loading, error, fetchReversation };
+  return { loading, error, alreadyBooked, fetchReversation };
 }
